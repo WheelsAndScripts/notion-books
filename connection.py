@@ -19,3 +19,11 @@ except Exception as e:
     print("Erreur lors de la connexion :")
     print(type(e).__name__)  # Type de l'exception
     print(e)  # Message détaillé de l'erreur
+
+# database = notion.databases.retrieve(database_id=database_id)
+# print(database)
+
+# Récupérer les livres
+response = notion.databases.query(database_id=database_id)
+for result in response["results"]:
+    print(result["properties"]["Titre"]["title"][0]["text"]["content"])
