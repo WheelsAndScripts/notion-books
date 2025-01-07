@@ -21,6 +21,7 @@ except Exception as e:
     print(e)  # Message détaillé de l'erreur
 
 
+'''
 try:
     # Récupérer les détails de la base de données
     database = notion.databases.retrieve(database_id=database_id)
@@ -34,28 +35,35 @@ try:
 
 except Exception as e:
     print("Erreur lors de la récupération des colonnes :", e)
- 
+'''
+
 
 # Récupérer les livres
 response = notion.databases.query(database_id=database_id)
 for result in response["results"]:
     # Pour récupérer les titres des livres
-    title = result["properties"]["Titre"]["title"][0]["text"]["content"]
+    # title = result["properties"]["Titre"]["title"][0]["text"]["content"]
+    title_property = result["properties"].get("Titre", {}).get("title", [])
+    title = title_property[0].get("text", {}).get("content", "No title") if title_property else "No title"
 
     # Pour récupérer les auteurs des livres
-    author = result["properties"]["Auteur"]["rich_text"][0]["text"]["content"]
+    # author = result["properties"]["Auteur"]["rich_text"][0]["text"]["content"]
+    author_property = result["properties"].get("Auteur", {}).get("rich_text", [])
+    author = author_property[0].get("text", {}).get("content", "No author") if author_property else "No author"
 
     # Pour récupérer les tags/genres des livres
-    # print(result["properties"]["Tags"])
+    tags = result["properties"].get("Tags", {}).get("multi_select", [])
+    tags_list = [tag['name'] for tag in tags] if tags else []
 
     # Pour récupérer les status de lecture (à lire, en cours, lu)
-    status = result["properties"]["Status"]["status"]["name"]
+    # status = result["properties"]["Status"]["status"]["name"]
+    status = result["properties"].get("Status", {}).get("status", {}).get("name", "No status")
 
     # Pour récupérer l'image de couverture 
     # cover = result["properties"]["Cover"] # don't know what to do with the images for now, we'll see later
 
     # Récupérer la date de fin de lecture 
-    date_json = result["properties"]["Date de fin de lecture prévue"]["date"]
+    date_json = result["properties"].get("Date de fin de lecture prévue", {}).get("date", None)
     if date_json is not None :
         reading_end_date = date_json["start"]
         # print(type(reading_end_date)) # date in str format for the moment
@@ -64,14 +72,19 @@ for result in response["results"]:
         reading_end_date = "No date"
 
     # Pour récupérer les favoris
-    favorite = result["properties"]["Favoris"]["checkbox"]
+    # favorite = result["properties"]["Favoris"]["checkbox"]
+    favorite = result["properties"].get("Favoris", {}).get("checkbox", False) # les élèments de cette colonnes ne peuvent pas être vides (configuré dans notion)
 
     # Pour récupérer la notation sur 10
-    rating_number = result["properties"]["Note sur 10"]["number"]
+    # rating_number = result["properties"]["Note sur 10"]["number"]
+    rating_number = result["properties"].get("Note sur 10", {}).get("number", None)
 
     # Pour récupérer la notation en étoiles
-    stars_rating = result["properties"]["Etoiles"]["formula"]["string"]
+    # stars_rating = result["properties"]["Etoiles"]["formula"]["string"] 
+    stars_rating = result["properties"].get("Etoiles", {}).get("formula", {}).get("string", "☆☆☆☆☆") # les élèments de cette colonne ne peuvent pas être vides (configurée dans notion)
 
     # Récupérer les commentaires
-    comments = result["properties"]["Commentaire"]["rich_text"][0]["text"]["content"]
+    # comments = result["properties"]["Commentaire"]["rich_text"][0]["text"]["content"]
+    comments_property = result["properties"].get("Commentaire", {}).get("rich_text", [])
+    comments = comments_property[0].get("text", {}).get("content", "No comment") if comments_property else "No comment"
 
