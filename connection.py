@@ -1,6 +1,8 @@
-from notion_client import Client
 import os
+import json
 from dotenv import load_dotenv
+from notion_client import Client
+
 
 # Charger le token
 load_dotenv()
@@ -88,3 +90,17 @@ for result in response["results"]:
     comments_property = result["properties"].get("Commentaire", {}).get("rich_text", [])
     comments = comments_property[0].get("text", {}).get("content", "No comment") if comments_property else "No comment"
 
+
+# Charger les données depuis le fichier JSON
+with open("new_book.json", "r", encoding="utf-8") as file:
+    new_book = json.load(file)
+
+# Ajouter le nouveau livre à la base de données
+try:
+    notion.pages.create(
+        parent={"database_id": database_id},
+        properties=new_book
+    )
+    print("Livre ajouté avec succès !")
+except Exception as e:
+    print(f"Erreur lors de l'ajout du livre : {e}")

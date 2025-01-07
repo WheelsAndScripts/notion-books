@@ -1,0 +1,41 @@
+{
+    "Titre": {
+        "title": [
+            {
+                "text": { "content": "Le Petit Prince" }
+            }
+        ]
+    },
+    "Auteur": {
+        "rich_text": [
+            {
+                "text": { "content": "Antoine de Saint-Exupéry" }
+            }
+        ]
+    },
+    "Tags": {
+        "multi_select": [
+            { "name": "Classique" },
+            { "name": "Fiction" }
+        ]
+    },
+    "Status": {
+        "status": { "name": "A lire" }
+    },
+    "Date de fin de lecture prévue": {
+        "date": { "start": "2025-02-15" }
+    },
+    "Favoris": {
+        "checkbox": false
+    },
+    "Note sur 10": {
+        "number": 9
+    },
+    "Commentaire": {
+        "rich_text": [
+            {
+                "text": { "content": "Un chef-d'œuvre intemporel à lire absolument." }
+            }
+        ]
+    }
+}
