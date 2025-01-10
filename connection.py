@@ -27,23 +27,6 @@ except Exception as e:
     print(e)  # Message détaillé de l'erreur
 
 
-'''
-try:
-    # Récupérer les détails de la base de données
-    database = notion.databases.retrieve(database_id=database_id)
-    
-    # Extraire les colonnes et leurs types
-    properties = database["properties"]
-    for column_name, column_info in properties.items():
-        print(f"Nom de la colonne : {column_name}")
-        print(f"Type : {column_info['type']}")
-        print("-" * 40)
-
-except Exception as e:
-    print("Erreur lors de la récupération des colonnes :", e)
-'''
-
-
 
 # Charger les données depuis le fichier JSON
 with open("new_book.json", "r", encoding="utf-8") as file:
