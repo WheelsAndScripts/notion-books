@@ -2,12 +2,14 @@ import os
 import json
 from dotenv import load_dotenv
 from notion_client import Client
+from pymongo import MongoClient
 
 
 # Charger le token
 load_dotenv()
 notion_token = os.getenv("NOTION_TOKEN")
 database_id = os.getenv("NOTION_DB_ID")
+mongo_uri = os.getenv("MONGO_URI")
 
 # Initialiser le client Notion
 notion = Client(auth=notion_token)
@@ -95,12 +97,47 @@ for result in response["results"]:
 with open("new_book.json", "r", encoding="utf-8") as file:
     new_book = json.load(file)
 
+# Extraire le titre et l'auteur du nouveau livre
+new_book_title = new_book.get("Titre", {}).get("title", [])[0].get("text", {}).get("content", "No title").strip()
+new_book_author = new_book.get("Auteur", {}).get("rich_text", [])[0].get("text", {}).get("content", "No author").strip()
+
 # Ajouter le nouveau livre à la base de données
 try:
-    notion.pages.create(
-        parent={"database_id": database_id},
-        properties=new_book
+
+    books = response["results"]
+
+    # Parcourir les livres existants pour vérifier les doublons
+    book_exists = any(
+        book["properties"].get("Titre", {}).get("title", [])[0].get("text", {}).get("content", "").strip() == new_book_title and
+        book["properties"].get("Auteur", {}).get("rich_text", [])[0].get("text", {}).get("content", "").strip() == new_book_author
+        for book in books
     )
-    print("Livre ajouté avec succès !")
+
+    # Insertion d'un livre -> seulement s'il existe pas déjà (Titre, Auteur) déjà dans la table
+    if book_exists:
+        print(f"Le livre '{new_book_title}' de '{new_book_author}' existe déjà dans la base de données.")
+    else:
+        # Ajouter le nouveau livre à la base de données s'il n'est pas déjà dans la base
+        notion.pages.create(
+            parent={"database_id": database_id},
+            properties=new_book
+        )
+        print("Livre ajouté avec succès !")
+        
+
 except Exception as e:
     print(f"Erreur lors de l'ajout du livre : {e}")
+
+
+
+# Se connecter à MongoDB
+client = MongoClient(mongo_uri)
+
+# Créer une base de données
+db = client["LivresDB"]
+
+# Créer une collection
+collection = db["Livres"]
+# Fermeture explicite de la connexion
+client.close()
+print("Connexion à MongoDB réussie !")
