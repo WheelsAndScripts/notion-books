@@ -64,7 +64,6 @@ except Exception as e:
     print(f"Erreur lors de l'ajout du livre : {e}")
 
 
-
 # Se connecter à MongoDB
 client = MongoClient(mongo_uri)
 
@@ -74,7 +73,6 @@ db = client["LivresDB"]
 # Créer une collection
 collection = db["Livres"]
 print("Connexion à MongoDB réussie !")
-
 
 
 for result in response["results"]:
@@ -97,29 +95,28 @@ for result in response["results"]:
     # status = result["properties"]["Status"]["status"]["name"]
     status = result["properties"].get("Status", {}).get("status", {}).get("name", "No status")
 
-    # Pour récupérer l'image de couverture 
-    # cover = result["properties"]["Cover"] # don't know what to do with the images for now, we'll see later
-
     # Récupérer la date de fin de lecture 
     date_json = result["properties"].get("Date de fin de lecture prévue", {}).get("date", None)
-    if date_json is not None :
+    if date_json is not None:
         reading_end_date = date_json["start"]
         # print(type(reading_end_date)) # date in str format for the moment
 
-    else :
+    else:
         reading_end_date = "No date"
 
     # Pour récupérer les favoris
     # favorite = result["properties"]["Favoris"]["checkbox"]
-    favorite = result["properties"].get("Favoris", {}).get("checkbox", False) # les élèments de cette colonnes ne peuvent pas être vides (configuré dans notion)
+    # les élèments de cette colonnes ne peuvent pas être vides
+    favorite = result["properties"].get("Favoris", {}).get("checkbox", False)
 
     # Pour récupérer la notation sur 10
     # rating_number = result["properties"]["Note sur 10"]["number"]
     rating_number = result["properties"].get("Note sur 10", {}).get("number", None)
 
     # Pour récupérer la notation en étoiles
-    # stars_rating = result["properties"]["Etoiles"]["formula"]["string"] 
-    stars_rating = result["properties"].get("Etoiles", {}).get("formula", {}).get("string", "☆☆☆☆☆") # les élèments de cette colonne ne peuvent pas être vides (configurée dans notion)
+    # stars_rating = result["properties"]["Etoiles"]["formula"]["string"]
+    # les élèments de cette colonne ne peuvent pas être vides
+    stars_rating = result["properties"].get("Etoiles", {}).get("formula", {}).get("string", "☆☆☆☆☆")
 
     # Récupérer les commentaires
     # comments = result["properties"]["Commentaire"]["rich_text"][0]["text"]["content"]
@@ -145,8 +142,6 @@ for result in response["results"]:
 
     except Exception as e:
         print(f"Erreur lors de l'ajout : {e}")
-
-
 
 
 # Fermeture explicite de la connexion MongoDB
