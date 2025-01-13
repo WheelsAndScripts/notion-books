@@ -27,7 +27,6 @@ except Exception as e:
     print(e)  # Message détaillé de l'erreur
 
 
-
 # Charger les données depuis le fichier JSON
 with open("new_book.json", "r", encoding="utf-8") as file:
     new_book = json.load(file)
